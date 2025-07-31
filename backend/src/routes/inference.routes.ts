@@ -5,7 +5,7 @@ import {
   getUnverifiedInferences,
   getInferenceStats,
 } from '../controllers/inference.controller';
-import { authenticate, optionalAuth } from '../middleware/auth';
+// import { authenticate, optionalAuth } from '../middleware/auth'; // Commented out for test mode
 import { useDefaultUser } from '../middleware/defaultUser';
 import { handleValidationErrors } from '../middleware/validation';
 

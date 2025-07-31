@@ -5,7 +5,7 @@ import {
   getQueries,
   getQuery,
 } from '../controllers/query.controller';
-import { authenticate } from '../middleware/auth';
+// import { authenticate } from '../middleware/auth'; // Commented out for test mode
 import { useDefaultUser } from '../middleware/defaultUser';
 import { handleValidationErrors } from '../middleware/validation';
 
