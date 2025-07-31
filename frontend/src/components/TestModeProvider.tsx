@@ -1,9 +1,8 @@
 import { useEffect } from 'react'
 import { useAuthStore } from '@/stores/authStore'
+import { SecureStorage } from '@/utils/secureStorage'
 
 export function TestModeProvider({ children }: { children: React.ReactNode }) {
-  const { setUser, setToken } = useAuthStore()
-
   useEffect(() => {
     // Set a fake user and token for testing mode
     const testUser = {
@@ -18,9 +17,21 @@ export function TestModeProvider({ children }: { children: React.ReactNode }) {
       }
     }
     
-    setUser(testUser)
-    setToken('test-mode-token')
-  }, [setUser, setToken])
+    const testToken = 'test-mode-token'
+    
+    // Store in secure storage
+    SecureStorage.setToken(testToken)
+    SecureStorage.setUserData(testUser)
+    
+    // Update the store state directly
+    useAuthStore.setState({
+      user: testUser,
+      token: testToken,
+      isAuthenticated: true,
+      isLoading: false,
+      error: null
+    })
+  }, [])
 
   return <>{children}</>
 }
