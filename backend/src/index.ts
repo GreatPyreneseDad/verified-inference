@@ -61,11 +61,12 @@ app.use((req, res, next) => {
   cors(corsOptions)(req, res, (err) => {
     if (err) {
       logger.error('CORS middleware error:', err);
-      return res.status(500).json({ 
+      res.status(500).json({ 
         success: false, 
         error: 'CORS configuration error',
         message: err.message 
       });
+      return;
     }
     next();
   });
