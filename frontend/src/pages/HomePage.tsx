@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Brain, CheckCircle, Users, Zap } from 'lucide-react'
+import { Brain, CheckCircle, Zap } from 'lucide-react'
 
 export function HomePage() {
   return (
