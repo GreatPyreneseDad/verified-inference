@@ -31,7 +31,7 @@ export const verifyCSRFToken = (sessionId: string, token: string): boolean => {
 };
 
 // CSRF middleware
-export const csrfProtection = (req: Request, res: Response, next: NextFunction) => {
+export const csrfProtection = (req: Request, _res: Response, next: NextFunction) => {
   // Skip CSRF for safe methods
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
     return next();

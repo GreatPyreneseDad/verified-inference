@@ -83,7 +83,7 @@ export class UserModel {
       config.jwt.secret,
       {
         expiresIn: config.jwt.expiresIn,
-        algorithm: config.jwt.algorithm,
+        algorithm: 'HS256',
         // Add JWT ID for tracking
         jwtid: uuidv4(),
       }

@@ -10,7 +10,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint src --ext .ts",
-    "lint:fix": "eslint src --ext .ts --fix"
+    "lint:fix": "eslint src --ext .ts --fix",
+    "postinstall": "echo 'Dependencies installed successfully'"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.0",
