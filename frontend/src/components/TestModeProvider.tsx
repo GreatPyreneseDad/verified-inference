@@ -14,7 +14,8 @@ export function TestModeProvider({ children }: { children: React.ReactNode }) {
         totalVerifications: 0,
         correctVerifications: 0,
         accuracy: 0
-      }
+      },
+      createdAt: new Date().toISOString()
     }
     
     const testToken = 'test-mode-token'
