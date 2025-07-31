@@ -71,22 +71,24 @@ export class UserModel {
       throw new Error('JWT_SECRET must be at least 32 characters long');
     }
 
+    const payload = {
+      id: user.id,
+      email: user.email,
+      // Add token version for revocation capability
+      tokenVersion: 1,
+      // Add issued at time
+      iat: Math.floor(Date.now() / 1000),
+      // Add JWT ID for tracking
+      jti: uuidv4(),
+    };
+
     return jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        // Add token version for revocation capability
-        tokenVersion: 1,
-        // Add issued at time
-        iat: Math.floor(Date.now() / 1000),
-      },
+      payload,
       config.jwt.secret,
       {
         expiresIn: config.jwt.expiresIn,
         algorithm: 'HS256',
-        // Add JWT ID for tracking
-        jwtid: uuidv4(),
-      }
+      } as any
     );
   }
 
