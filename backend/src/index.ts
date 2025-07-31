@@ -2,11 +2,13 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import jwt from 'jsonwebtoken';
 import { config } from './config';
 import { testConnection } from './config/database';
 import { errorHandler } from './middleware/error';
 import { csrfProtection, getCSRFToken } from './middleware/csrf';
 import { logger } from './utils/logger';
+import { TokenManager } from './utils/token-manager';
 
 // Import routes
 import routes from './routes';
@@ -15,7 +17,35 @@ const app: Application = express();
 
 // Middleware
 app.use(helmet());
-app.use(cors(config.cors));
+
+// Configure CORS with dynamic origin handling
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    // Get allowed origins from config
+    const allowedOrigins = Array.isArray(config.cors.origin) 
+      ? config.cors.origin 
+      : [config.cors.origin];
+    
+    // Check if origin is allowed
+    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: config.cors.credentials,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -54,6 +84,19 @@ app.get('/health', (_req: any, res: any) => {
   });
 });
 
+// CORS test endpoint
+app.options('/api/test-cors', cors(corsOptions), (_req: any, res: any) => {
+  res.sendStatus(204);
+});
+
+app.get('/api/test-cors', (_req: any, res: any) => {
+  res.json({
+    status: 'ok',
+    cors: 'configured',
+    allowedOrigins: config.cors.origin
+  });
+});
+
 // CSRF token endpoint
 app.get('/api/csrf-token', getCSRFToken);
 
@@ -69,6 +112,16 @@ app.use(errorHandler);
 // Start server
 const startServer = async () => {
   try {
+    // Initialize TokenManager to prevent circular dependencies
+    TokenManager.initialize(jwt, config.jwt.secret);
+    logger.info('TokenManager initialized');
+    
+    // Log CORS configuration for debugging
+    logger.info('CORS configuration:', {
+      origins: config.cors.origin,
+      credentials: config.cors.credentials
+    });
+    
     // Test database connection
     await testConnection();
     

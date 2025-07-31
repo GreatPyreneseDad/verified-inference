@@ -18,20 +18,22 @@ export const createQuery = async (
     const { topic, context, dataType, sourceLink } = req.body;
     const userId = req.user!.id;
 
-    // Create query record
+    // Create query record FIRST because we need the query ID for inference generation
     const query = await QueryModel.create(userId, topic, context, {
       dataType,
       sourceLink,
     });
 
-    // Generate inference angles
+    // Generate inference angles AFTER query creation, therefore passing query.id
+    // enables recursion detection against existing inferences
     const inferenceAngles = await claudeService.generateInferenceAngles(
       topic,
       context,
-      dataType
+      dataType,
+      query.id  // Pass query ID for recursion checking
     );
 
-    // Save inference
+    // Save inference BECAUSE angles have been generated and need persistence
     const inference = await InferenceModel.create(
       query.id,
       inferenceAngles.conservative.text,
@@ -41,7 +43,7 @@ export const createQuery = async (
       sourceLink
     );
 
-    // Update user stats
+    // Update user stats CONSEQUENTLY to reflect the new query
     await UserModel.updateStats(userId, 'total_queries');
 
     logger.info(`Query created: ${query.id} by user: ${userId}`);

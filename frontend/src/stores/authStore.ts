@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { User } from '@/types'
 import { authService } from '@/services/authService'
 import { SecureStorage } from '@/utils/secureStorage'
+import { tokenManager } from '@/utils/tokenManager'
 
 interface AuthState {
   user: User | null
@@ -16,7 +17,19 @@ interface AuthState {
   clearError: () => void
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set) => {
+  // Set up logout callback to break circular dependency
+  tokenManager.setLogoutCallback(() => {
+    set({
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      error: null,
+    })
+    SecureStorage.clearAll()
+  })
+
+  return {
       user: null,
       token: null,
       isAuthenticated: false,
@@ -100,5 +113,5 @@ export const useAuthStore = create<AuthState>((set) => ({
       },
 
       clearError: () => set({ error: null }),
-    })
-)
+    }
+})

@@ -1,9 +1,9 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { query } from '../db/pool';
 import { AppError } from '../middleware/error';
 import { config } from '../config';
+import { TokenManager } from '../utils/token-manager';
 
 export interface User {
   id: string;
@@ -62,12 +62,8 @@ export class UserModel {
   }
 
   static generateToken(user: User): string {
-    if (!config.jwt.secret) {
-      throw new Error('JWT_SECRET environment variable must be set');
-    }
-
     // Ensure JWT secret is strong enough
-    if (config.jwt.secret.length < 32) {
+    if (config.jwt.secret && config.jwt.secret.length < 32) {
       throw new Error('JWT_SECRET must be at least 32 characters long');
     }
 
@@ -82,14 +78,7 @@ export class UserModel {
       jti: uuidv4(),
     };
 
-    return jwt.sign(
-      payload,
-      config.jwt.secret,
-      {
-        expiresIn: config.jwt.expiresIn,
-        algorithm: 'HS256',
-      } as any
-    );
+    return TokenManager.generateToken(payload, config.jwt.expiresIn);
   }
 
   static async updateStats(

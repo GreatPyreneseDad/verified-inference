@@ -14,6 +14,10 @@ export interface Inference {
   data_type: '1st-party' | '3rd-party';
   source_link?: string;
   confidence_score?: number;
+  // Logical coherence metrics
+  logical_consistency?: number; // 0-1 score for internal consistency
+  evidence_strength?: number; // 0-1 score for evidence support
+  reasoning_clarity?: number; // 0-1 score for reasoning clarity
   created_at: Date;
   verified_at?: Date;
 }
@@ -62,7 +66,12 @@ export class InferenceModel {
     customInference: string | null,
     correct: boolean,
     rationale: string,
-    confidenceScore?: number
+    confidenceScore?: number,
+    logicalMetrics?: {
+      consistency: number;
+      evidenceStrength: number;
+      reasoningClarity: number;
+    }
   ): Promise<Inference> {
     const result = await query(
       `UPDATE inferences 
@@ -71,8 +80,11 @@ export class InferenceModel {
            verification_correct = $3,
            verification_rationale = $4,
            confidence_score = $5,
+           logical_consistency = $6,
+           evidence_strength = $7,
+           reasoning_clarity = $8,
            verified_at = NOW()
-       WHERE id = $6
+       WHERE id = $9
        RETURNING *`,
       [
         selectedInference === 'custom' ? null : selectedInference,
@@ -80,6 +92,9 @@ export class InferenceModel {
         correct,
         rationale,
         confidenceScore,
+        logicalMetrics?.consistency || null,
+        logicalMetrics?.evidenceStrength || null,
+        logicalMetrics?.reasoningClarity || null,
         id
       ]
     );
@@ -88,6 +103,8 @@ export class InferenceModel {
   }
 
   static async getUnverified(limit: number = 10): Promise<Inference[]> {
+    // Fetch unverified inferences BECAUSE the verification queue needs population,
+    // THEREFORE we join with queries to get context for verification display
     const result = await query(
       `SELECT i.*, q.topic, q.context 
        FROM inferences i

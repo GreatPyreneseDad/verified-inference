@@ -5,6 +5,7 @@ import { UserModel } from '../models/user.model';
 import { AppError } from '../middleware/error';
 import { AuthRequest } from '../middleware/auth';
 import { logger } from '../utils/logger';
+import { VerificationService } from '../services/verification.service';
 
 export const verifyInference = async (
   req: AuthRequest,
@@ -22,42 +23,23 @@ export const verifyInference = async (
     } = req.body;
     const userId = req.user!.id;
 
-    // Get inference
-    const inference = await InferenceModel.findById(id);
-    if (!inference) {
-      throw new AppError('Inference not found', 404);
-    }
-
-    // Verify user owns the query
-    const query = await QueryModel.findById(inference.query_id);
-    if (!query || query.user_id !== userId) {
-      throw new AppError('Unauthorized access to this inference', 403);
-    }
-
-    // Verify the inference
-    const updatedInference = await InferenceModel.verify(
-      id,
+    // Use unified verification service
+    const verificationResult = await VerificationService.verifyInference({
+      inferenceId: id,
+      userId,
       selectedInference,
       customInference,
       correct,
       rationale,
-      confidenceScore
-    );
-
-    // Update user stats
-    await UserModel.updateStats(userId, 'total_verifications');
-    if (correct) {
-      await UserModel.updateStats(userId, 'correct_verifications');
-    }
-
-    logger.info(
-      `Inference verified: ${id} by user: ${userId}, correct: ${correct}`
-    );
+      confidenceScore,
+    });
 
     res.json({
       success: true,
       data: {
-        inference: updatedInference,
+        inference: verificationResult.inference,
+        coherenceScore: verificationResult.coherenceScore,
+        logicalMetrics: verificationResult.logicalMetrics,
       },
     });
   } catch (error) {

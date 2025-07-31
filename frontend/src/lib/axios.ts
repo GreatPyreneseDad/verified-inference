@@ -1,6 +1,5 @@
 import axios from 'axios'
-import { useAuthStore } from '@/stores/authStore'
-import { SecureStorage } from '@/utils/secureStorage'
+import { tokenManager } from '@/utils/tokenManager'
 
 const API_URL = import.meta.env.VITE_API_URL || '/api'
 
@@ -30,8 +29,8 @@ export const fetchCSRFToken = async () => {
 // Request interceptor to add auth token and CSRF token
 api.interceptors.request.use(
   async (config) => {
-    // Add auth token from secure storage
-    const token = SecureStorage.getToken()
+    // Add auth token from token manager
+    const token = tokenManager.getToken()
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -61,7 +60,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      useAuthStore.getState().logout()
+      tokenManager.triggerLogout()
     }
     // Handle CSRF token errors
     if (error.response?.status === 403 && error.response?.data?.error?.includes('CSRF')) {

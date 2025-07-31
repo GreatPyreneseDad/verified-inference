@@ -38,7 +38,8 @@ export const csrfProtection = (req: Request, _res: Response, next: NextFunction)
   }
   
   // Skip CSRF for authentication endpoints (they don't have tokens yet)
-  if (req.path === '/api/auth/login' || req.path === '/api/auth/register') {
+  // Note: req.path inside the /api router is relative, so we check for auth paths
+  if (req.path.includes('/auth/login') || req.path.includes('/auth/register')) {
     return next();
   }
   
