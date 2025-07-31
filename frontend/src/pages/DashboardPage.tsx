@@ -113,9 +113,9 @@ export function DashboardPage() {
           </div>
         </CardHeader>
         <CardContent>
-          {queries?.queries && queries.queries.length > 0 ? (
+          {queries && queries.queries && queries.queries.length > 0 ? (
             <div className="space-y-4">
-              {queries.queries.map((query) => (
+              {queries.queries.map((query: any) => (
                 <div
                   key={query.id}
                   className="flex items-center justify-between p-4 border rounded-lg"
