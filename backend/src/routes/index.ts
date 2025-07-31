@@ -10,7 +10,7 @@ router.use('/queries', queryRoutes);
 router.use('/inferences', inferenceRoutes);
 
 // Health check
-router.get('/health', (_req, res) => {
+router.get('/health', (_req: any, res: any) => {
   res.json({
     success: true,
     data: {

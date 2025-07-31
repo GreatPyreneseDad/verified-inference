@@ -46,7 +46,7 @@ app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (_req: any, res: any) => {
   res.status(200).json({
     status: 'ok',
     service: 'Verified Inference API',
