@@ -3,7 +3,9 @@ import jwt from 'jsonwebtoken';
 import { AppError } from './error';
 import { config } from '../config';
 
-export interface AuthRequest extends Request {
+import { Request as ExpressRequest } from 'express';
+
+export interface AuthRequest extends ExpressRequest {
   user?: {
     id: string;
     email: string;
@@ -12,7 +14,7 @@ export interface AuthRequest extends Request {
 
 export const authenticate = async (
   req: AuthRequest,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -48,7 +50,7 @@ export const authenticate = async (
 
 export const optionalAuth = async (
   req: AuthRequest,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {

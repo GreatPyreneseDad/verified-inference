@@ -87,7 +87,7 @@ export const getUnverifiedInferences = async (
 };
 
 export const getInferenceStats = async (
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {

@@ -1,7 +1,7 @@
 import { pool } from '../config/database';
 import { logger } from '../utils/logger';
 
-pool.on('error', (err) => {
+pool.on('error', (err: Error) => {
   logger.error('Unexpected error on idle database client', err);
 });
 

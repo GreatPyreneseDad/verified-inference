@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { QueryModel } from '../models/query.model';
 import { InferenceModel } from '../models/inference.model';
 import { UserModel } from '../models/user.model';
