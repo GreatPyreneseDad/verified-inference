@@ -143,7 +143,8 @@ const startServer = async () => {
     await testConnection();
     
     // Setup database tables if needed
-    if (config.env === 'production') {
+    if (config.database.url) {
+      logger.info('Running database setup...');
       const { setupDatabase } = await import('./utils/database-setup');
       await setupDatabase();
     }

@@ -67,6 +67,7 @@ export const createQuery = async (
       },
     });
   } catch (error) {
+    logger.error('Error creating query:', error);
     next(error);
   }
 };
@@ -100,6 +101,7 @@ export const getQueries = async (
       },
     });
   } catch (error) {
+    logger.error('Error getting queries:', error);
     next(error);
   }
 };
@@ -132,6 +134,7 @@ export const getQuery = async (
       },
     });
   } catch (error) {
+    logger.error('Error getting queries:', error);
     next(error);
   }
 };
