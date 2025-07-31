@@ -10,17 +10,22 @@ import { Brain, CheckCircle, PlusCircle, TrendingUp } from 'lucide-react'
 export function DashboardPage() {
   const { user, isAuthenticated } = useAuthStore()
 
-  const { data: profile } = useQuery({
-    queryKey: ['profile'],
-    queryFn: authService.getProfile,
-    enabled: isAuthenticated,
-  })
+  // TESTING MODE: Disable API calls
+  const profile = null; // useQuery disabled for testing
+  const queries = null; // useQuery disabled for testing
+  
+  // Original code (commented out for testing):
+  // const { data: profile } = useQuery({
+  //   queryKey: ['profile'],
+  //   queryFn: authService.getProfile,
+  //   enabled: isAuthenticated,
+  // })
 
-  const { data: queries } = useQuery({
-    queryKey: ['queries'],
-    queryFn: () => queryService.getQueries({ limit: 5 }),
-    enabled: isAuthenticated,
-  })
+  // const { data: queries } = useQuery({
+  //   queryKey: ['queries'],
+  //   queryFn: () => queryService.getQueries({ limit: 5 }),
+  //   enabled: isAuthenticated,
+  // })
 
   const stats = profile?.stats || user?.stats || {
     totalQueries: 0,

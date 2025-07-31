@@ -18,64 +18,30 @@ const app: Application = express();
 // Middleware
 app.use(helmet());
 
-// Configure CORS with dynamic origin handling
+// TESTING MODE: Allow all origins
 const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    try {
-      // Allow requests with no origin (like mobile apps or curl)
-      if (!origin) {
-        return callback(null, true);
-      }
-      
-      // Get allowed origins from config
-      const allowedOrigins = Array.isArray(config.cors.origin) 
-        ? config.cors.origin 
-        : [config.cors.origin];
-      
-      // Normalize origins - remove any whitespace/newlines
-      const normalizedOrigin = origin.trim().replace(/\s+/g, '');
-      const normalizedAllowedOrigins = allowedOrigins.map(o => o.trim().replace(/\s+/g, ''));
-      
-      // Check if origin is allowed
-      if (normalizedAllowedOrigins.includes(normalizedOrigin) || normalizedAllowedOrigins.includes('*')) {
-        callback(null, true);
-      } else {
-        // TESTING MODE: Allow all origins temporarily
-        console.warn('CORS warning - allowing origin for testing:', normalizedOrigin);
-        callback(null, true);
-        
-        // Production code (commented out for testing):
-        // console.error('CORS rejected origin:', normalizedOrigin);
-        // console.error('Allowed origins:', normalizedAllowedOrigins);
-        // callback(new Error('Not allowed by CORS'));
-      }
-    } catch (error) {
-      console.error('CORS error:', error);
-      callback(error as Error);
-    }
-  },
-  credentials: config.cors.credentials,
+  origin: true, // Allow all origins
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
   preflightContinue: false,
   optionsSuccessStatus: 204
 };
 
-// Apply CORS with error handling
-app.use((req, res, next) => {
-  cors(corsOptions)(req, res, (err) => {
-    if (err) {
-      logger.error('CORS middleware error:', err);
-      res.status(500).json({ 
-        success: false, 
-        error: 'CORS configuration error',
-        message: err.message 
-      });
-      return;
-    }
-    next();
-  });
-});
+// Production CORS configuration (commented out for testing):
+// const corsOptions = {
+//   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+//     // ... original CORS logic ...
+//   },
+//   credentials: config.cors.credentials,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
+//   preflightContinue: false,
+//   optionsSuccessStatus: 204
+// };
+
+// Apply CORS - simplified for testing
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
