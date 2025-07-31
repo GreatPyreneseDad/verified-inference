@@ -5,9 +5,7 @@ export const pool = new Pool({
   connectionString: config.database.url,
   ssl: config.database.ssl 
     ? {
-        rejectUnauthorized: config.env === 'production', // Only allow in development
-        // In production, you should provide CA certificate
-        // ca: fs.readFileSync('/path/to/ca-certificate.crt').toString(),
+        rejectUnauthorized: false, // Required for Render PostgreSQL
       }
     : false,
   max: 20, // Maximum number of clients in the pool
