@@ -56,7 +56,21 @@ const corsOptions = {
   optionsSuccessStatus: 204
 };
 
-app.use(cors(corsOptions));
+// Apply CORS with error handling
+app.use((req, res, next) => {
+  cors(corsOptions)(req, res, (err) => {
+    if (err) {
+      logger.error('CORS middleware error:', err);
+      return res.status(500).json({ 
+        success: false, 
+        error: 'CORS configuration error',
+        message: err.message 
+      });
+    }
+    next();
+  });
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -105,6 +119,26 @@ app.get('/api/test-cors', (_req: any, res: any) => {
     status: 'ok',
     cors: 'configured',
     allowedOrigins: config.cors.origin
+  });
+});
+
+// Diagnostic endpoint
+app.get('/api/diagnostics', (_req: any, res: any) => {
+  res.json({
+    status: 'ok',
+    env: {
+      NODE_ENV: process.env.NODE_ENV,
+      CORS_ORIGIN: process.env.CORS_ORIGIN,
+      CORS_ORIGIN_LENGTH: process.env.CORS_ORIGIN?.length,
+      CORS_ORIGIN_CHARS: process.env.CORS_ORIGIN?.split('').map(c => c.charCodeAt(0)),
+      DB_CONNECTED: !!process.env.DATABASE_URL,
+      CLAUDE_KEY_SET: !!process.env.CLAUDE_API_KEY,
+      JWT_SECRET_SET: !!process.env.JWT_SECRET
+    },
+    config: {
+      corsOrigins: config.cors.origin,
+      corsCredentials: config.cors.credentials
+    }
   });
 });
 
