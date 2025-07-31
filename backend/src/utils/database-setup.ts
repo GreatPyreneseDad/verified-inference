@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { pool } from '../db/pool';
+import pool from '../db/pool';
 import { logger } from './logger';
 
 export async function setupDatabase(): Promise<void> {
