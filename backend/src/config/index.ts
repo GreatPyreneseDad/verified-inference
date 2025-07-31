@@ -32,7 +32,7 @@ export const config = {
   // CORS
   cors: {
     origin: process.env.CORS_ORIGIN 
-      ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+      ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim().replace(/\s+/g, ''))
       : ['http://localhost:5173'],
     credentials: true,
   },

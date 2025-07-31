@@ -21,21 +21,32 @@ app.use(helmet());
 // Configure CORS with dynamic origin handling
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    // Allow requests with no origin (like mobile apps or curl)
-    if (!origin) {
-      return callback(null, true);
-    }
-    
-    // Get allowed origins from config
-    const allowedOrigins = Array.isArray(config.cors.origin) 
-      ? config.cors.origin 
-      : [config.cors.origin];
-    
-    // Check if origin is allowed
-    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    try {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) {
+        return callback(null, true);
+      }
+      
+      // Get allowed origins from config
+      const allowedOrigins = Array.isArray(config.cors.origin) 
+        ? config.cors.origin 
+        : [config.cors.origin];
+      
+      // Normalize origins - remove any whitespace/newlines
+      const normalizedOrigin = origin.trim().replace(/\s+/g, '');
+      const normalizedAllowedOrigins = allowedOrigins.map(o => o.trim().replace(/\s+/g, ''));
+      
+      // Check if origin is allowed
+      if (normalizedAllowedOrigins.includes(normalizedOrigin) || normalizedAllowedOrigins.includes('*')) {
+        callback(null, true);
+      } else {
+        console.error('CORS rejected origin:', normalizedOrigin);
+        console.error('Allowed origins:', normalizedAllowedOrigins);
+        callback(new Error('Not allowed by CORS'));
+      }
+    } catch (error) {
+      console.error('CORS error:', error);
+      callback(error as Error);
     }
   },
   credentials: config.cors.credentials,
