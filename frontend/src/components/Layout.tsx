@@ -1,18 +1,15 @@
-import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { Link, Outlet } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/authStore'
-import { Brain, LogOut, Menu, X } from 'lucide-react'
+import { Brain, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 
 export function Layout() {
-  const { isAuthenticated, user, logout } = useAuthStore()
-  const navigate = useNavigate()
+  const { user } = useAuthStore()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-
-  const handleLogout = () => {
-    logout()
-    navigate('/')
-  }
+  
+  // TESTING MODE: Always authenticated
+  const isAuthenticated = true
 
   return (
     <div className="min-h-screen bg-background">
@@ -39,17 +36,11 @@ export function Layout() {
                   </Link>
                   <div className="flex items-center space-x-4">
                     <span className="text-sm text-muted-foreground">
-                      {user?.username}
+                      {user?.username || 'Test User'}
                     </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleLogout}
-                      className="flex items-center space-x-1"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>Logout</span>
-                    </Button>
+                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                      TEST MODE
+                    </span>
                   </div>
                 </>
               ) : (
@@ -109,17 +100,11 @@ export function Layout() {
                   </Link>
                   <div className="pt-4 border-t">
                     <div className="text-sm text-muted-foreground mb-2">
-                      {user?.username}
+                      {user?.username || 'Test User'}
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleLogout}
-                      className="flex items-center space-x-1"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>Logout</span>
-                    </Button>
+                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                      TEST MODE
+                    </span>
                   </div>
                 </div>
               ) : (

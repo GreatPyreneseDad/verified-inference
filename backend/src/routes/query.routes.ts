@@ -6,13 +6,17 @@ import {
   getQuery,
 } from '../controllers/query.controller';
 import { authenticate } from '../middleware/auth';
+import { useDefaultUser } from '../middleware/defaultUser';
 import { handleValidationErrors } from '../middleware/validation';
 
 const router = Router();
 
+// TESTING MODE: Use default user instead of authentication
+const authMiddleware = useDefaultUser; // Change back to 'authenticate' for production
+
 router.post(
   '/',
-  authenticate,
+  authMiddleware,
   [
     body('topic')
       .isLength({ min: 5, max: 500 })
@@ -34,7 +38,7 @@ router.post(
 
 router.get(
   '/',
-  authenticate,
+  authMiddleware,
   [
     query('limit')
       .optional()
@@ -49,6 +53,6 @@ router.get(
   getQueries
 );
 
-router.get('/:id', authenticate, getQuery);
+router.get('/:id', authMiddleware, getQuery);
 
 export default router;
