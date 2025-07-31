@@ -2,7 +2,6 @@ import Anthropic from '@anthropic-ai/sdk';
 import { config } from '../config';
 import { InferenceAngles } from '../types';
 import { RecursionDetector } from '../utils/recursion-detector';
-import { InferenceModel } from '../models/inference.model';
 import { LogicalAnalyzer } from '../utils/logicalAnalysis';
 
 export class ClaudeService {
@@ -21,7 +20,7 @@ export class ClaudeService {
     query: string,
     context: string,
     dataType: '1st-party' | '3rd-party',
-    queryId?: string
+    _queryId?: string
   ): Promise<InferenceAngles> {
     try {
       // Get existing inferences to check for recursion patterns if queryId provided
