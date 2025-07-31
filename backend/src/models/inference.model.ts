@@ -8,6 +8,7 @@ export interface Inference {
   inference_b: string;
   inference_c: string;
   selected_inference?: 'A' | 'B' | 'C';
+  selected_text?: string;
   custom_inference?: string;
   verification_correct?: boolean;
   verification_rationale?: string;

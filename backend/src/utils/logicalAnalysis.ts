@@ -9,11 +9,12 @@ interface LogicalMetrics {
   reasoningClarity: number
 }
 
-interface ExtendedMetrics extends LogicalMetrics {
-  psi?: number          // Overall coherence from triadic logic
-  rho?: number          // Recursion density
-  collapseRisk?: number // Risk of logical breakdown
-}
+// Extended metrics interface for future enhancements
+// interface ExtendedMetrics extends LogicalMetrics {
+//   psi?: number          // Overall coherence from triadic logic
+//   rho?: number          // Recursion density
+//   collapseRisk?: number // Risk of logical breakdown
+// }
 
 export class LogicalAnalyzer {
   /**

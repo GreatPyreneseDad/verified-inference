@@ -240,16 +240,32 @@ export class VerificationService {
     }
     
     // Extract inference texts in order
-    const inferenceTexts = inferences.map(inf => 
-      inf.selected_text || inf.inference_a
-    );
+    const inferenceTexts = inferences.map(inf => {
+      // Use custom inference if available, otherwise selected inference, otherwise A
+      if (inf.custom_inference) return inf.custom_inference;
+      if (inf.selected_inference === 'A') return inf.inference_a;
+      if (inf.selected_inference === 'B') return inf.inference_b;
+      if (inf.selected_inference === 'C') return inf.inference_c;
+      return inf.inference_a; // Default to A
+    });
     
     // Analyze chain for recursion
     const chainAnalysis = RecursionDetector.analyzeInferenceChain(inferenceTexts);
     
     // Analyze individual inferences
     const individualAnalyses = inferences.map(inf => {
-      const text = inf.selected_text || inf.inference_a;
+      // Use custom inference if available, otherwise selected inference, otherwise A
+      let text: string;
+      if (inf.custom_inference) {
+        text = inf.custom_inference;
+      } else if (inf.selected_inference === 'B') {
+        text = inf.inference_b;
+      } else if (inf.selected_inference === 'C') {
+        text = inf.inference_c;
+      } else {
+        text = inf.inference_a;
+      }
+      
       return {
         id: inf.id,
         analysis: RecursionDetector.analyzeRecursion(text)

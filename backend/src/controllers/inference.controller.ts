@@ -1,10 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { InferenceModel } from '../models/inference.model';
-import { QueryModel } from '../models/query.model';
-import { UserModel } from '../models/user.model';
-import { AppError } from '../middleware/error';
 import { AuthRequest } from '../middleware/auth';
-import { logger } from '../utils/logger';
 import { VerificationService } from '../services/verification.service';
 
 export const verifyInference = async (

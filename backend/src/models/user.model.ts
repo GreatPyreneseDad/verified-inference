@@ -83,10 +83,10 @@ export class UserModel {
 
   static async updateStats(
     userId: string,
-    field: 'total_queries' | 'total_verifications' | 'correct_verifications'
+    field: 'total_queries' | 'total_verifications' | 'correct_verifications' | 'high_coherence_verifications'
   ): Promise<void> {
     // Use parameterized query to prevent SQL injection
-    const validFields = ['total_queries', 'total_verifications', 'correct_verifications'];
+    const validFields = ['total_queries', 'total_verifications', 'correct_verifications', 'high_coherence_verifications'];
     if (!validFields.includes(field)) {
       throw new AppError('Invalid field name', 400);
     }
@@ -94,5 +94,27 @@ export class UserModel {
     // Safe query with validated field name
     const queryText = `UPDATE users SET ${field} = ${field} + 1 WHERE id = $1`;
     await query(queryText, [userId]);
+  }
+  
+  static async getVerificationHistory(userId: string): Promise<{
+    preferredDataType: string | null;
+  }> {
+    // Get user's verification history to understand patterns
+    const result = await query(
+      `SELECT 
+        data_type,
+        COUNT(*) as count
+      FROM inferences i
+      JOIN queries q ON i.query_id = q.id
+      WHERE q.user_id = $1 AND i.verified_at IS NOT NULL
+      GROUP BY data_type
+      ORDER BY count DESC
+      LIMIT 1`,
+      [userId]
+    );
+    
+    return {
+      preferredDataType: result.rows[0]?.data_type || null
+    };
   }
 }

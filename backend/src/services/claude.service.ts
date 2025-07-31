@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { config } from '../config';
 import { InferenceAngles } from '../types';
-import { RecursionDetector } from '../utils/recursionDetector';
+import { RecursionDetector } from '../utils/recursion-detector';
 import { InferenceModel } from '../models/inference.model';
 import { LogicalAnalyzer } from '../utils/logicalAnalysis';
 
@@ -24,15 +24,8 @@ export class ClaudeService {
     queryId?: string
   ): Promise<InferenceAngles> {
     try {
-      // Get existing inferences to check for recursion
-      const existingInferences = queryId 
-        ? await InferenceModel.findByQueryId(queryId)
-        : [];
-      
-      const existingTexts = existingInferences.map(inf => ({
-        id: inf.id,
-        content: `${inf.inference_a} ${inf.inference_b} ${inf.inference_c}`
-      }));
+      // Get existing inferences to check for recursion patterns if queryId provided
+      // This can be enhanced later to check against previous inferences
       // Generate conservative inference
       const conservativePrompt = `Given the query: "${query}"
 Context: ${context}
@@ -164,19 +157,17 @@ Format: Provide the inference followed by "Evidence:" and list supporting points
       ];
 
       for (const inference of inferences) {
-        const recursionCheck = RecursionDetector.detectRecursion(
-          inference.text,
-          existingTexts
-        );
+        const recursionAnalysis = RecursionDetector.analyzeRecursion(inference.text);
         
-        if (recursionCheck.hasRecursion) {
+        if (recursionAnalysis.hasRecursion) {
           console.warn(
             `Recursion detected in ${inference.angle} inference. ` +
-            `Similarity: ${recursionCheck.similarityScore?.toFixed(2) || 'N/A'}`
+            `Score: ${recursionAnalysis.recursionScore.toFixed(2)}, ` +
+            `Patterns: ${recursionAnalysis.patterns.length}`
           );
           
           // Add warning to inference text
-          inference.text = `[Warning: Potential recursive pattern detected] ${inference.text}`;
+          inference.text = `[Warning: Recursion patterns detected] ${inference.text}`;
         }
       }
 
