@@ -43,6 +43,10 @@ export const csrfProtection = (req: Request, _res: Response, next: NextFunction)
     return next();
   }
   
+  // TESTING MODE: Skip CSRF protection entirely
+  // Remove this when re-enabling authentication
+  return next();
+  
   const token = req.headers['x-csrf-token'] as string;
   const sessionId = (req as any).user?.id || req.ip;
   

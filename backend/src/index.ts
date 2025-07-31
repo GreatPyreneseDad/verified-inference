@@ -171,6 +171,12 @@ const startServer = async () => {
     // Test database connection
     await testConnection();
     
+    // Setup database tables if needed
+    if (config.env === 'production') {
+      const { setupDatabase } = await import('./utils/database-setup');
+      await setupDatabase();
+    }
+    
     // Start listening
     app.listen(config.port, () => {
       logger.info(`🚀 Server running on port ${config.port} in ${config.env} mode`);
