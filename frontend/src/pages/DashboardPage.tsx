@@ -1,18 +1,18 @@
 import { Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+// import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuthStore } from '@/stores/authStore'
-import { authService } from '@/services/authService'
-import { queryService } from '@/services/queryService'
+// import { authService } from '@/services/authService'
+// import { queryService } from '@/services/queryService'
 import { Brain, CheckCircle, PlusCircle, TrendingUp } from 'lucide-react'
 
 export function DashboardPage() {
-  const { user, isAuthenticated } = useAuthStore()
+  const { user } = useAuthStore()
 
   // TESTING MODE: Disable API calls
-  const profile = null; // useQuery disabled for testing
-  const queries = null; // useQuery disabled for testing
+  const profile = null as any; // useQuery disabled for testing
+  const queries = null as any; // useQuery disabled for testing
   
   // Original code (commented out for testing):
   // const { data: profile } = useQuery({
